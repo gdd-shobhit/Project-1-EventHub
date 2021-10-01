@@ -1,0 +1,35 @@
+{
+  "name": "http-api-assignment-ii",
+  "version": "1.0.0",
+  "description": "http api 2",
+  "main": "./src/server.js",
+  "scripts": {
+    "test": "echo \"test complete\"",
+    "pretest": "eslint ./src --fix",
+    "start": "node ./src/server.js",
+    "nodemon": "nodemon --watch ./src ./src/server.js"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/gdd-shobhit/http-api-assignment-ii.git"
+  },
+  "author": "Shobhit Dhamania",
+  "license": "UNLICENSED",
+  "bugs": {
+    "url": "https://github.com/gdd-shobhit/http-api-assignment-ii/issues"
+  },
+  "homepage": "https://github.com/gdd-shobhit/http-api-assignment-ii#readme",
+  "dependencies": {
+    "node": "^16.9.1"
+  },
+  "devDependencies": {
+    "@babel/cli": "^7.15.7",
+    "@babel/core": "^7.15.5",
+    "@babel/preset-env": "^7.15.6",
+    "eslint": "^7.32.0",
+    "eslint-config-airbnb": "^18.2.1",
+    "eslint-plugin": "^1.0.1",
+    "eslint-plugin-import": "^2.24.2",
+    "nodemon": "^2.0.12"
+  }
+}
