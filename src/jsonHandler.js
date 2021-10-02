@@ -12,6 +12,14 @@ const respondJSON = (request, response, status, object) => {
     respondJSON(request, response, 200, responseJSON);
   };
   
+  const addEvent = (request,response) => {
+      const responseJson = {
+          message: 'Added Card Successfully'
+      };
+
+      respondJSON(request,response,200,responseJson);
+  }
+
   const badRequest = (request, response, params) => {
     const responseJSON = {
       message: 'This request has the required parameters',
@@ -39,4 +47,5 @@ const respondJSON = (request, response, status, object) => {
     success,
     badRequest,
     notFound,
+    addEvent,
   };

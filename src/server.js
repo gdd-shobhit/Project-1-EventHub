@@ -3,15 +3,14 @@ const url = require('url');
 const query = require('querystring');
 const htmlHandler = require('./htmlHandler.js');
 const jsonHandler = require('./jsonHandler.js');
-const animeHandler = require('./animation.js');
 const port = process.env.PORT || process.env.NODE_PORT || 3000;
 
 
 const urlStruct = {
   '/': htmlHandler.getIndex,
   '/style.css':htmlHandler.getCSS,
-  '/anime':animeHandler.boxRotate,
   '/bundle.js': htmlHandler.getBundle,
+  '/addEvent':jsonHandler.addEvent,
   '/success': jsonHandler.success,
   '/badRequest': jsonHandler.badRequest,
   notFound: jsonHandler.notFound,
