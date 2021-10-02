@@ -1,0 +1,37 @@
+{
+  "name": "project-1-eventhub",
+  "version": "1.0.0",
+  "description": "Project 1",
+  "main": "./src/server.js",
+  "scripts": {
+    "test": "echo \"test complete\"",
+    "pretest": "eslint ./src --fix",
+    "start": "node ./src/server.js",
+    "nodemon": "nodemon -e js,html,css --watch ./hosted ./src/server.js",
+    "build": "babel ./client --out-file ./hosted/bundle.js",
+    "watch": "babel --watch ./client --out-file ./hosted/bundle.js"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/gdd-shobhit/Project-1-EventHub.git"
+  },
+  "author": "Shobhit Dhamania",
+  "license": "UNLICENSED",
+  "bugs": {
+    "url": "https://github.com/gdd-shobhit/Project-1-EventHub/issues"
+  },
+  "homepage": "https://github.com/gdd-shobhit/Project-1-EventHub#readme",
+  "devDependencies": {
+    "@babel/cli": "^7.15.7",
+    "@babel/core": "^7.15.5",
+    "@babel/preset-env": "^7.15.6",
+    "eslint": "^7.32.0",
+    "eslint-config-airbnb": "^18.2.1",
+    "eslint-plugin-import": "^2.24.2",
+    "nodemon": "^2.0.13"
+  },
+  "dependencies": {
+    "animejs": "^3.2.1",
+    "node": "^16.10.0"
+  }
+}
