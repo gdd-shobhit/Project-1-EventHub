@@ -211,30 +211,86 @@ function fauxClick(x, y) {
   document.dispatchEvent(fauxClick);
 }
 }
-const sendAjax = (url) => {
-const xhr = new XMLHttpRequest();
-xhr.open('GET', url);
-xhr.setRequestHeader ("Accept", 'Application/json');
 
-if(url === "/")
-{
-    xhr.onload = () => animations();
+const parseJSON = (xhr, content) => {
+  const obj = JSON.parse(xhr.response);
+  console.dir(obj);
+  
+  if(obj.eventName) {
+    const p = document.createElement('p');
+    p.textContent = `Event: ${obj.eventName}`;
+    content.appendChild(p);
+  }
+};
+
+const handleResponse = (xhr,parse) => {
+  const content = document.querySelector('#content');
+  //parse response 
+  if(parse){
+    parseJSON(xhr, content);
+  }
+};
+
+const sendGet = (xhr,url) =>{
+
+  xhr.open("GET",url);
+  xhr.setRequestHeader ('Accept', 'application/json');
+  xhr.onload = () => handleResponse(xhr,true);
 }
-else{
-    console.dir("here");
-    document.querySelector("#content").append(document.createElement('p').innerHTML = "Event Here");
-}
 
+const sendPost = (e,incomingForm) =>{
+  
+  const incomingFormAction = incomingForm.getAttribute('action');
+  const incomingFormMethod = incomingForm.getAttribute('method');
 
-xhr.send();
+  const xhr = new XMLHttpRequest();
+  let formData;
+  if(incomingFormAction === '/addEvent')
+  {
+    const eventNameField = incomingForm.querySelector('#eventNameField');
+    xhr.open(incomingFormMethod, incomingFormAction);
+  
+    xhr.setRequestHeader('Content-type', 'application/x-www-form-urlencoded');
+    xhr.setRequestHeader ('Accept', 'application/json');
+    
+    xhr.onload = () => handleResponse(xhr,true);
+    
+    formData = `eventName=${eventNameField.value}`;
+  }
+  else if(incomingFormAction === '/addUser')
+  {
+    // will get events list and then check if the user typed the right event or not
+    // and then only he can enter that event
+    const events = sendGet(xhr,'/getEvent');
+    const eventNameField = incomingForm.querySelector('#eventNameField');
+    xhr.open(incomingFormMethod, incomingFormAction);
+  
+    xhr.setRequestHeader('Content-type', 'application/x-www-form-urlencoded');
+    xhr.setRequestHeader ('Accept', 'application/json');
+    
+    xhr.onload = () => handleResponse(xhr,true);
+    
+    formData = `userName=${eventNameField.value}&eventName=${ageField.value}`;
+  }
+
+  xhr.send(formData);
+
+  e.preventDefault();
+  return false;
 };
 
 const init = () => {
-  // add Event Listeners
-  const addButton = document.querySelector("#pulseButton");
+  // starting animation
+  animations();
+  // Button will Add event as a card, Right now its just on the backend
+  const eventForm = document.querySelector('#eventForm');
+  const userForm = document.querySelector('#userForm');
 
-  addButton.addEventListener('click',()=>sendAjax('/addEvent'));
-  sendAjax('/');
+  const addEvent = (e) => sendPost(e, eventForm);
+  const addUser = (e) => sendPost(e,userForm);
+
+  eventForm.addEventListener('submit',addEvent);
+  userForm.addEventListener('submit',addUser);
 };
 
 window.onload = init;

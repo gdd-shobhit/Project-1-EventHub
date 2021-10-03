@@ -224,30 +224,89 @@ var animations = function animations() {
   }
 };
 
-var sendAjax = function sendAjax(url) {
-  var xhr = new XMLHttpRequest();
-  xhr.open('GET', url);
-  xhr.setRequestHeader("Accept", 'Application/json');
+var parseJSON = function parseJSON(xhr, content) {
+  var obj = JSON.parse(xhr.response);
+  console.dir(obj);
 
-  if (url === "/") {
+  if (obj.eventName) {
+    var p = document.createElement('p');
+    p.textContent = "Event: ".concat(obj.eventName);
+    content.appendChild(p);
+  }
+};
+
+var handleResponse = function handleResponse(xhr, parse) {
+  var content = document.querySelector('#content'); //parse response 
+
+  if (parse) {
+    parseJSON(xhr, content);
+  }
+};
+
+var sendGet = function sendGet(xhr, url) {
+  xhr.open("GET", url);
+  xhr.setRequestHeader('Accept', 'application/json');
+
+  xhr.onload = function () {
+    return handleResponse(xhr, true);
+  };
+};
+
+var sendPost = function sendPost(e, incomingForm) {
+  var incomingFormAction = incomingForm.getAttribute('action');
+  var incomingFormMethod = incomingForm.getAttribute('method');
+  var xhr = new XMLHttpRequest();
+  var formData;
+
+  if (incomingFormAction === '/addEvent') {
+    var eventNameField = incomingForm.querySelector('#eventNameField');
+    xhr.open(incomingFormMethod, incomingFormAction);
+    xhr.setRequestHeader('Content-type', 'application/x-www-form-urlencoded');
+    xhr.setRequestHeader('Accept', 'application/json');
+
     xhr.onload = function () {
-      return animations();
+      return handleResponse(xhr, true);
     };
-  } else {
-    console.dir("here");
-    document.querySelector("#content").append(document.createElement('p').innerHTML = "Event Here");
+
+    formData = "eventName=".concat(eventNameField.value);
+  } else if (incomingFormAction === '/addUser') {
+    var events = sendGet(xhr, '/getEvent');
+
+    var _eventNameField = incomingForm.querySelector('#eventNameField');
+
+    xhr.open(incomingFormMethod, incomingFormAction);
+    xhr.setRequestHeader('Content-type', 'application/x-www-form-urlencoded');
+    xhr.setRequestHeader('Accept', 'application/json');
+
+    xhr.onload = function () {
+      return handleResponse(xhr, true);
+    };
+
+    formData = "userName=".concat(_eventNameField.value, "&eventName=").concat(ageField.value);
   }
 
-  xhr.send();
+  xhr.send(formData);
+  e.preventDefault();
+  return false;
 };
 
 var init = function init() {
-  // add Event Listeners
-  var addButton = document.querySelector("#pulseButton");
-  addButton.addEventListener('click', function () {
-    return sendAjax('/addEvent');
-  });
-  sendAjax('/');
+  // starting animation
+  animations(); // Button will Add event as a card, Right now its just on the backend
+
+  var eventForm = document.querySelector('#eventForm');
+  var userForm = document.querySelector('#userForm');
+
+  var addEvent = function addEvent(e) {
+    return sendPost(e, eventForm);
+  };
+
+  var addUser = function addUser(e) {
+    return sendPost(e, userForm);
+  };
+
+  eventForm.addEventListener('submit', addEvent);
+  userForm.addEventListener('submit', addUser);
 };
 
 window.onload = init;

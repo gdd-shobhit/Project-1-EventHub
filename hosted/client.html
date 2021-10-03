@@ -13,12 +13,24 @@
     </script>
 
 </head>
-<body>
+<body id="content">
     <canvas id="c1"></canvas>
 <h1>EventHub</h1>
+<h3>A hub for adding events and people to it. You can see who all are going the events. Larger-scope: Chat with people in the event</h3>
+<form id="eventForm" action="/addEvent" method="POST">
+  <label for="eventName">Event Name: </label>
+  <input id="eventNameField" type="text" name="eventName" />
+  <input type="submit" value="Add Event" class="pulse" id="pulseButton" />
+  </form>
 
-<div class="buttons">
-  <button class="pulse" id="pulseButton">Add Event</button>
-</div>
+  <form id="userForm" action="/addUser" method="POST">
+    <label for="userName">Full Name: </label>
+    <input id="nameField" type="text" name="userName" />
+    <label for="eventName">Event Name: </label>
+    <input id="eventNameUser" type="text" name="eventName" />
+    <input type="submit" value="Add User" class="pulse" id="pulseButton" />
+  </form>
+  
+
 </body>
 </html>
