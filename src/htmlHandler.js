@@ -22,7 +22,6 @@ const getBundle = (request, response) => {
   response.end();
 };
 
-
 module.exports = {
   getIndex,
   getCSS,
