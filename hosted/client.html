@@ -7,30 +7,27 @@
     <script src="/bundle.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/animejs/2.2.0/anime.js"></script>
     <script src="https://requirejs.org/docs/release/2.3.5/minified/require.js"></script>
-    <script>
-      "use strict"
-      
-    </script>
 
 </head>
-<body id="content">
+<body>
     <canvas id="c1"></canvas>
-<h1>EventHub</h1>
-<h3>A hub for adding events and people to it. You can see who all are going the events. Larger-scope: Chat with people in the event</h3>
-<form id="eventForm" action="/addEvent" method="POST">
-  <label for="eventName">Event Name: </label>
-  <input id="eventNameField" type="text" name="eventName" />
-  <input type="submit" value="Add Event" class="pulse" id="pulseButton" />
-  </form>
 
-  <form id="userForm" action="/addUser" method="POST">
-    <label for="userName">Full Name: </label>
-    <input id="nameField" type="text" name="userName" />
-    <label for="eventName">Event Name: </label>
-    <input id="eventNameUser" type="text" name="eventName" />
-    <input type="submit" value="Add User" class="pulse" id="pulseButton" />
-  </form>
-  
 
+  <div class="body"></div>
+    <div class="header">
+      <div>Event<span id="hub">Hub</span></div>
+    </div>
+    <br>
+    <form class="addEvent" id="eventForm" action="/addEvent" method="POST">
+        <input id="eventNameField" type="text" placeholder="Event Name" name="eventName"><br>
+        
+        <br><br><input type="submit" class="third" value="Add Event">
+    </form>
+    <h3>Event Already Exist? Add yourself now</h2>
+      <form action="/addUser"></form>
+    <div class="box" id="eventBox">
+      <ul id="eventList">Event List<br>
+        </ul>
+    </div>
 </body>
 </html>

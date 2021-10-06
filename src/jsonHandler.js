@@ -64,19 +64,16 @@ const addUser = (request, response, body) => {
     message: 'Name and Event Name are both required',
   };
 
-  // check to make sure we have both fields
   if (!body.userName || !body.eventName) {
     responseJSON.id = 'missingParams';
     return respondJSON(request, response, 400, responseJSON);
   }
 
-  // default status code to 201 created
   let responseCode = 201;
 
   if (users[body.name]) {
     responseCode = 204;
   } else {
-    // otherwise create an object with that name
     users[body.name] = {};
   }
 
@@ -90,9 +87,7 @@ const addUser = (request, response, body) => {
     responseJSON.message = 'Created Successfully';
     return respondJSON(request, response, responseCode, responseJSON);
   }
-  // 204 has an empty payload, just a success
-  // It cannot have a body, so we just send a 204 without a message
-  // 204 will not alter the browser in any way!!!
+
   return respondJSONMeta(request, response, responseCode);
 };
 

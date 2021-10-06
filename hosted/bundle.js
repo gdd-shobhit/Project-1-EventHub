@@ -1,20 +1,30 @@
 "use strict";
 
+var eventCount = 0;
+
 var animations = function animations() {
   var c = document.getElementById("c1");
+  var hub = document.getElementById("hub");
+  var eventBox = document.getElementById("eventBox");
   var ctx = c.getContext("2d");
   var cH;
   var cW;
-  var bgColor = "#ff4dd5";
+  var bgColor = "#66d483";
+  hub.style.color = "#2980B9";
+  eventBox.style.color = "#2980B9";
   var animations = [];
   var circles = [];
 
   var colorPicker = function () {
-    var colors = ["#FF4dd5", "#66d483", "#2980B9", "#282741"];
+    var colors = ["#66d483", "#2980B9", "#FF4dd5", "#282741"];
     var index = 0;
+    var hubIndex = 1;
 
     function next() {
       index = index++ < colors.length - 1 ? index : 0;
+      hubIndex = hubIndex++ < colors.length - 1 ? hubIndex : 0;
+      hub.style.color = colors[hubIndex];
+      eventBox.style.color = colors[hubIndex];
       return colors[index];
     }
 
@@ -228,15 +238,32 @@ var parseJSON = function parseJSON(xhr, content) {
   var obj = JSON.parse(xhr.response);
   console.dir(obj);
 
-  if (obj.eventName) {
-    var p = document.createElement('p');
-    p.textContent = "Event: ".concat(obj.eventName);
-    content.appendChild(p);
+  if (obj.events) {
+    eventCount++;
+    console.dir(obj.events); // const p = document.createElement('p');
+    // p.id=obj.events[0].eventName;
+    // p.textContent = `Event: ${obj.events.eventName}`;
+    // content.appendChild(p);
   }
 };
 
 var handleResponse = function handleResponse(xhr, parse) {
   var content = document.querySelector('#content'); //parse response 
+
+  switch (xhr.status) {
+    case 201:
+      var li = document.createElement('li');
+      li.textContent = eventNameField.value;
+      document.querySelector("#eventList").append(li);
+      break;
+
+    case 204:
+      console.dir("already exists");
+      return;
+
+    default:
+      console.dir("default");
+  }
 
   if (parse) {
     parseJSON(xhr, content);
@@ -259,19 +286,6 @@ var sendPost = function sendPost(e, incomingForm) {
   var formData;
 
   if (incomingFormAction === '/addEvent') {
-    var eventNameField = incomingForm.querySelector('#eventNameField');
-    xhr.open(incomingFormMethod, incomingFormAction);
-    xhr.setRequestHeader('Content-type', 'application/x-www-form-urlencoded');
-    xhr.setRequestHeader('Accept', 'application/json');
-
-    xhr.onload = function () {
-      return handleResponse(xhr, true);
-    };
-
-    formData = "eventName=".concat(eventNameField.value);
-  } else if (incomingFormAction === '/addUser') {
-    var events = sendGet(xhr, '/getEvent');
-
     var _eventNameField = incomingForm.querySelector('#eventNameField');
 
     xhr.open(incomingFormMethod, incomingFormAction);
@@ -282,7 +296,23 @@ var sendPost = function sendPost(e, incomingForm) {
       return handleResponse(xhr, true);
     };
 
-    formData = "userName=".concat(_eventNameField.value, "&eventName=").concat(ageField.value);
+    formData = "eventName=".concat(_eventNameField.value);
+  } else if (incomingFormAction === '/addUser') {
+    // will get events list and then check if the user typed the right event or not
+    // and then only he can enter that event
+    var events = sendGet(xhr, '/getEvent');
+
+    var _eventNameField2 = incomingForm.querySelector('#eventNameField');
+
+    xhr.open(incomingFormMethod, incomingFormAction);
+    xhr.setRequestHeader('Content-type', 'application/x-www-form-urlencoded');
+    xhr.setRequestHeader('Accept', 'application/json');
+
+    xhr.onload = function () {
+      return handleResponse(xhr, true);
+    };
+
+    formData = "userName=".concat(_eventNameField2.value, "&eventName=").concat(ageField.value);
   }
 
   xhr.send(formData);
@@ -294,19 +324,14 @@ var init = function init() {
   // starting animation
   animations(); // Button will Add event as a card, Right now its just on the backend
 
-  var eventForm = document.querySelector('#eventForm');
-  var userForm = document.querySelector('#userForm');
+  var eventForm = document.querySelector('#eventForm'); // const userForm = document.querySelector('#userForm');
 
   var addEvent = function addEvent(e) {
     return sendPost(e, eventForm);
-  };
+  }; // const addUser = (e) => sendPost(e,userForm);
 
-  var addUser = function addUser(e) {
-    return sendPost(e, userForm);
-  };
 
-  eventForm.addEventListener('submit', addEvent);
-  userForm.addEventListener('submit', addUser);
+  eventForm.addEventListener('submit', addEvent); // userForm.addEventListener('submit',addUser);
 };
 
 window.onload = init;

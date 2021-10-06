@@ -1,18 +1,27 @@
+let eventCount=0;
 const animations = () =>{
-
     var c = document.getElementById("c1");
+    var hub = document.getElementById("hub");
+    var eventBox = document.getElementById("eventBox");
 var ctx = c.getContext("2d");
 var cH;
 var cW;
-var bgColor = "#ff4dd5";
+var bgColor = "#66d483";
+hub.style.color = "#2980B9";
+eventBox.style.color="#2980B9";
 var animations = [];
 var circles = [];
 
 var colorPicker = (function() {
-  var colors = ["#FF4dd5", "#66d483", "#2980B9", "#282741"];
+
+  var colors = ["#66d483", "#2980B9","#FF4dd5", "#282741"];
   var index = 0;
+  var hubIndex=1;
   function next() {
     index = index++ < colors.length-1 ? index : 0;
+    hubIndex = hubIndex++<colors.length-1 ? hubIndex : 0;
+    hub.style.color=colors[hubIndex];
+    eventBox.style.color=colors[hubIndex];
     return colors[index];
   }
   function current() {
@@ -215,17 +224,31 @@ function fauxClick(x, y) {
 const parseJSON = (xhr, content) => {
   const obj = JSON.parse(xhr.response);
   console.dir(obj);
-  
-  if(obj.eventName) {
-    const p = document.createElement('p');
-    p.textContent = `Event: ${obj.eventName}`;
-    content.appendChild(p);
+
+  if(obj.events) {
+    eventCount++;
+    console.dir(obj.events);
+    // const p = document.createElement('p');
+    // p.id=obj.events[0].eventName;
+    // p.textContent = `Event: ${obj.events.eventName}`;
+    // content.appendChild(p);
   }
 };
 
 const handleResponse = (xhr,parse) => {
   const content = document.querySelector('#content');
   //parse response 
+  switch(xhr.status)
+  {
+    case 201:var li = document.createElement('li');
+    li.textContent = eventNameField.value;
+    document.querySelector("#eventList").append(li);
+    break;
+    case 204: console.dir("already exists");
+    return;
+    default: console.dir("default");
+  }
+
   if(parse){
     parseJSON(xhr, content);
   }
@@ -284,13 +307,13 @@ const init = () => {
   animations();
   // Button will Add event as a card, Right now its just on the backend
   const eventForm = document.querySelector('#eventForm');
-  const userForm = document.querySelector('#userForm');
+  // const userForm = document.querySelector('#userForm');
 
   const addEvent = (e) => sendPost(e, eventForm);
-  const addUser = (e) => sendPost(e,userForm);
+  // const addUser = (e) => sendPost(e,userForm);
 
   eventForm.addEventListener('submit',addEvent);
-  userForm.addEventListener('submit',addUser);
+  // userForm.addEventListener('submit',addUser);
 };
 
 window.onload = init;
