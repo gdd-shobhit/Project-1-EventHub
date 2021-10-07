@@ -1,17 +1,34 @@
 "use strict";
 
 var eventCount = 0;
+var events = {};
+
+var populateEvents = function populateEvents() {
+  var count = document.getElementById("eventCount");
+  count.textContent = "Count: ".concat(eventCount);
+  console.dir("jere");
+  Object.keys(events).forEach(function (key) {
+    var li = document.createElement('li');
+    console.dir(key + "  " + events[key].eventName);
+    li.textContent = key;
+    eventCount++;
+    document.querySelector("#eventList").append(li);
+  });
+  return eventCount;
+};
 
 var animations = function animations() {
   var c = document.getElementById("c1");
   var hub = document.getElementById("hub");
   var eventBox = document.getElementById("eventBox");
+  var count = document.querySelector("#eventCount");
   var ctx = c.getContext("2d");
   var cH;
   var cW;
   var bgColor = "#66d483";
   hub.style.color = "#2980B9";
   eventBox.style.color = "#2980B9";
+  count.style.color = "#2980B9";
   var animations = [];
   var circles = [];
 
@@ -25,6 +42,7 @@ var animations = function animations() {
       hubIndex = hubIndex++ < colors.length - 1 ? hubIndex : 0;
       hub.style.color = colors[hubIndex];
       eventBox.style.color = colors[hubIndex];
+      count.style.color = colors[hubIndex];
       return colors[index];
     }
 
@@ -237,13 +255,18 @@ var animations = function animations() {
 var parseJSON = function parseJSON(xhr, content) {
   var obj = JSON.parse(xhr.response);
   console.dir(obj);
+  var count = document.getElementById("eventCount");
+
+  if (xhr.responseURL === '/') {
+    events = obj.events;
+    populateEvents();
+  }
 
   if (obj.events) {
+    events = obj.events;
     eventCount++;
-    console.dir(obj.events); // const p = document.createElement('p');
-    // p.id=obj.events[0].eventName;
-    // p.textContent = `Event: ${obj.events.eventName}`;
-    // content.appendChild(p);
+    console.dir(eventCount);
+    count.textContent = "Count: ".concat(eventCount);
   }
 };
 
@@ -251,9 +274,13 @@ var handleResponse = function handleResponse(xhr, parse) {
   var content = document.querySelector('#content'); //parse response 
 
   switch (xhr.status) {
+    case 200:
+      console.dir("Success");
+      break;
+
     case 201:
       var li = document.createElement('li');
-      li.textContent = eventNameField.value;
+      li.innerHTML = eventNameField.value;
       document.querySelector("#eventList").append(li);
       break;
 
@@ -270,13 +297,16 @@ var handleResponse = function handleResponse(xhr, parse) {
   }
 };
 
-var sendGet = function sendGet(xhr, url) {
+var sendGet = function sendGet(e, url) {
   xhr.open("GET", url);
   xhr.setRequestHeader('Accept', 'application/json');
+  console.log("here");
 
   xhr.onload = function () {
     return handleResponse(xhr, true);
   };
+
+  return eventCount;
 };
 
 var sendPost = function sendPost(e, incomingForm) {
@@ -297,22 +327,15 @@ var sendPost = function sendPost(e, incomingForm) {
     };
 
     formData = "eventName=".concat(_eventNameField.value);
-  } else if (incomingFormAction === '/addUser') {
-    // will get events list and then check if the user typed the right event or not
+  } else if (incomingFormAction === '/addUser') {// will get events list and then check if the user typed the right event or not
     // and then only he can enter that event
-    var events = sendGet(xhr, '/getEvent');
-
-    var _eventNameField2 = incomingForm.querySelector('#eventNameField');
-
-    xhr.open(incomingFormMethod, incomingFormAction);
-    xhr.setRequestHeader('Content-type', 'application/x-www-form-urlencoded');
-    xhr.setRequestHeader('Accept', 'application/json');
-
-    xhr.onload = function () {
-      return handleResponse(xhr, true);
-    };
-
-    formData = "userName=".concat(_eventNameField2.value, "&eventName=").concat(ageField.value);
+    // const events = sendGet(xhr,'/getEvent');
+    // const eventNameField = incomingForm.querySelector('#eventNameField');
+    // xhr.open(incomingFormMethod, incomingFormAction);
+    // xhr.setRequestHeader('Content-type', 'application/x-www-form-urlencoded');
+    // xhr.setRequestHeader ('Accept', 'application/json');
+    // xhr.onload = () => handleResponse(xhr,true);
+    // formData = `userName=${eventNameField.value}&eventName=${ageField.value}`;
   }
 
   xhr.send(formData);
@@ -331,7 +354,14 @@ var init = function init() {
   }; // const addUser = (e) => sendPost(e,userForm);
 
 
+  var getEvent = function getEvent(e) {
+    return sendGet(e, "/");
+  };
+
   eventForm.addEventListener('submit', addEvent); // userForm.addEventListener('submit',addUser);
+
+  var count = document.getElementById("eventCount");
+  count.textContent = "Count: ".concat(getEvent);
 };
 
 window.onload = init;

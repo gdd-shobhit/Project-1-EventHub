@@ -33,6 +33,12 @@ h3{
   top: 30%;
 }
 
+h2{
+  color: white;
+  position: absolute;
+  top: 10%;
+}
+
 
 canvas {
     display: relative;

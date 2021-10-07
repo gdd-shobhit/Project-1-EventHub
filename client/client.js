@@ -1,14 +1,36 @@
+
 let eventCount=0;
+let events ={};
+
+const populateEvents = () =>{
+  const count = document.getElementById("eventCount");
+  count.textContent = `Count: ${eventCount}`;
+ 
+  console.dir("jere")
+
+  Object.keys(events).forEach(key=>{
+    let li = document.createElement('li')
+    console.dir(key + "  " +events[key].eventName)
+    li.textContent=key;
+    eventCount++;
+    document.querySelector("#eventList").append(li);
+  })
+
+  return eventCount;
+}
+
 const animations = () =>{
     var c = document.getElementById("c1");
     var hub = document.getElementById("hub");
     var eventBox = document.getElementById("eventBox");
+    var count = document.querySelector("#eventCount");
 var ctx = c.getContext("2d");
 var cH;
 var cW;
 var bgColor = "#66d483";
 hub.style.color = "#2980B9";
 eventBox.style.color="#2980B9";
+count.style.color="#2980B9";
 var animations = [];
 var circles = [];
 
@@ -22,6 +44,7 @@ var colorPicker = (function() {
     hubIndex = hubIndex++<colors.length-1 ? hubIndex : 0;
     hub.style.color=colors[hubIndex];
     eventBox.style.color=colors[hubIndex];
+    count.style.color=colors[hubIndex];
     return colors[index];
   }
   function current() {
@@ -224,14 +247,17 @@ function fauxClick(x, y) {
 const parseJSON = (xhr, content) => {
   const obj = JSON.parse(xhr.response);
   console.dir(obj);
-
+  const count = document.getElementById("eventCount");
+  if(xhr.responseURL ==='/')
+  {
+    events = obj.events;
+    populateEvents();
+  }
   if(obj.events) {
+    events = obj.events;
     eventCount++;
-    console.dir(obj.events);
-    // const p = document.createElement('p');
-    // p.id=obj.events[0].eventName;
-    // p.textContent = `Event: ${obj.events.eventName}`;
-    // content.appendChild(p);
+    console.dir(eventCount);
+    count.textContent = `Count: ${eventCount}`;
   }
 };
 
@@ -240,9 +266,12 @@ const handleResponse = (xhr,parse) => {
   //parse response 
   switch(xhr.status)
   {
-    case 201:var li = document.createElement('li');
-    li.textContent = eventNameField.value;
-    document.querySelector("#eventList").append(li);
+    case 200: console.dir("Success");
+    break;
+    case 201:
+      var li = document.createElement('li');
+      li.innerHTML = eventNameField.value;
+      document.querySelector("#eventList").append(li);
     break;
     case 204: console.dir("already exists");
     return;
@@ -254,11 +283,13 @@ const handleResponse = (xhr,parse) => {
   }
 };
 
-const sendGet = (xhr,url) =>{
+const sendGet = (e,url) =>{
 
   xhr.open("GET",url);
   xhr.setRequestHeader ('Accept', 'application/json');
+  console.log("here");
   xhr.onload = () => handleResponse(xhr,true);
+  return eventCount;
 }
 
 const sendPost = (e,incomingForm) =>{
@@ -284,16 +315,16 @@ const sendPost = (e,incomingForm) =>{
   {
     // will get events list and then check if the user typed the right event or not
     // and then only he can enter that event
-    const events = sendGet(xhr,'/getEvent');
-    const eventNameField = incomingForm.querySelector('#eventNameField');
-    xhr.open(incomingFormMethod, incomingFormAction);
+    // const events = sendGet(xhr,'/getEvent');
+    // const eventNameField = incomingForm.querySelector('#eventNameField');
+    // xhr.open(incomingFormMethod, incomingFormAction);
   
-    xhr.setRequestHeader('Content-type', 'application/x-www-form-urlencoded');
-    xhr.setRequestHeader ('Accept', 'application/json');
+    // xhr.setRequestHeader('Content-type', 'application/x-www-form-urlencoded');
+    // xhr.setRequestHeader ('Accept', 'application/json');
     
-    xhr.onload = () => handleResponse(xhr,true);
+    // xhr.onload = () => handleResponse(xhr,true);
     
-    formData = `userName=${eventNameField.value}&eventName=${ageField.value}`;
+    // formData = `userName=${eventNameField.value}&eventName=${ageField.value}`;
   }
 
   xhr.send(formData);
@@ -311,9 +342,12 @@ const init = () => {
 
   const addEvent = (e) => sendPost(e, eventForm);
   // const addUser = (e) => sendPost(e,userForm);
+  const getEvent = (e) => sendGet(e,"/");
 
   eventForm.addEventListener('submit',addEvent);
   // userForm.addEventListener('submit',addUser);
+  const count = document.getElementById("eventCount");
+  count.textContent = `Count: ${getEvent}`
 };
 
 window.onload = init;
