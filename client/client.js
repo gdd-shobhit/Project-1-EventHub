@@ -2,34 +2,6 @@
 let eventCount=0;
 let events ={};
 
-const handleGetEvents = (xhr,e) =>{
-  const obj = JSON.parse(xhr.response);
-  events = obj.events;
-  console.dir("events parsed");
-}
-
-const populateEvents = (url) =>{
-  const count = document.getElementById("eventCount");
-  count.textContent = `Count: ${eventCount}`;
- 
-  const xhr = new XMLHttpRequest();
-  xhr.open('GET',url);
-  xhr.setRequestHeader ('Accept', 'application/json');
-  xhr.onload = () => handleGetEvents(xhr,e);
-  // const obj = JSON.parse(xhr.response);
-  // console.dir(obj);
-  //console.dir(events);
-
-  Object.keys(events).forEach(key=>{
-    let li = document.createElement('li')
-    console.dir(key + "  " +events[key].eventName)
-    li.textContent=key;
-    eventCount++;
-    document.querySelector("#eventList").append(li);
-  })
-  return eventCount;
-}
-
 const animations = () =>{
     var c = document.getElementById("c1");
     var hub = document.getElementById("hub");
@@ -255,36 +227,40 @@ function fauxClick(x, y) {
 }
 }
 
-const parseJSON = (xhr, content) => {
+const parseJSON = (xhr, update) => {
   const obj = JSON.parse(xhr.response);
-  console.dir(obj);
   const count = document.getElementById("eventCount");
   events = obj.events;
-  if(events)
+
+  if(update)
   {
+  let eventList = document.querySelector("#eventList");
+  while(eventList.firstChild)
+  {
+    eventList.removeChild(eventList.firstChild);
+    eventCount=0;
+  }
+  
     Object.keys(events).forEach(key=>{
       let li = document.createElement('li')
       console.dir(key + "  " +events[key].eventName)
       li.textContent=key;
       eventCount++;
-      document.querySelector("#eventList").append(li);
+      eventList.append(li);
     });
   }
-  
+  count.textContent = `Count: ${eventCount}`;  
 };
 
-const handleResponse = (xhr,parse) => {
-  const content = document.querySelector('#content');
+const handleResponse = (xhr,parse,update) => {
   //parse response 
   switch(xhr.status)
   {
     case 200: console.dir("Success");
+    document.querySelector("#userInputButton").disabled = false;
     break;
     case 201:
-      var li = document.createElement('li');
-      li.innerHTML = eventNameField.value;
-      eventCount++;
-      document.querySelector("#eventList").append(li);
+      
     break;
     case 204: console.dir("already exists");
     return;
@@ -292,7 +268,7 @@ const handleResponse = (xhr,parse) => {
   }
 
   if(parse){
-    parseJSON(xhr, content);
+    parseJSON(xhr, update);
   }
 };
 
@@ -307,7 +283,7 @@ const sendGetHead = (e,form) =>{
   console.log(xhr.response);
   if(incomingFormMethod === 'GET')
   {
-    xhr.onload = () => handleResponse(xhr,true);
+    xhr.onload = () => handleResponse(xhr,true,true);
   }
   
   xhr.send();
@@ -319,8 +295,8 @@ const sendGetHead = (e,form) =>{
 
 const sendPost = (e,incomingForm) =>{
   
-  const incomingFormAction = incomingForm.getAttribute('action');
-  const incomingFormMethod = incomingForm.getAttribute('method');
+  let incomingFormAction = incomingForm.getAttribute('action');
+  let incomingFormMethod = incomingForm.getAttribute('method');
 
   const xhr = new XMLHttpRequest();
   let formData;
@@ -332,25 +308,24 @@ const sendPost = (e,incomingForm) =>{
     xhr.setRequestHeader('Content-type', 'application/x-www-form-urlencoded');
     xhr.setRequestHeader ('Accept', 'application/json');
     
-    xhr.onload = () => handleResponse(xhr,true);
+    xhr.onload = () => handleResponse(xhr,true,true);
     
     formData = `eventName=${eventNameField.value}`;
   }
+
   else if(incomingFormAction === '/addUser')
   {
     // will get events list and then check if the user typed the right event or not
     // and then only he can enter that event
-    sendGetHead(e,)
     const userNameField = incomingForm.querySelector('#userNameField');
-    const eventNameField = incomingForm.querySelector('#eventNameField');
+    const userEventNameField = incomingForm.querySelector('#userEventNameField');
     xhr.open(incomingFormMethod, incomingFormAction);
-  
     xhr.setRequestHeader('Content-type', 'application/x-www-form-urlencoded');
     xhr.setRequestHeader ('Accept', 'application/json');
     
-    xhr.onload = () => handleResponse(xhr,true);
+    xhr.onload = () => handleResponse(xhr,true,false);
     
-    formData = `userName=${userNameField.value}&eventName=${eventNameField.value}`;
+    formData = `userName=${userNameField.value}&eventName=${userEventNameField.value}`;
   }
 
   xhr.send(formData);
@@ -362,9 +337,6 @@ const sendPost = (e,incomingForm) =>{
 const init = () => {
   // starting animation
   animations();
-  const count = document.getElementById("eventCount");
-  //count.textContent = `Count: ${populate}`
-  // Button will Add event as a card, Right now its just on the backend
   const eventForm = document.querySelector('#eventForm');
   const userForm = document.querySelector('#userForm');
   const eventList = document.querySelector('#eventListForm');

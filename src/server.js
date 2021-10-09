@@ -36,6 +36,25 @@ const handlePost = (request, response, parsedUrl) => {
       const bodyParams = query.parse(bodyString);
       jsonHandler.addEvent(request, res, bodyParams);
     });
+  } else if (parsedUrl.pathname === '/addUser') {
+    const res = response;
+    const body = [];
+
+    request.on('error', (err) => {
+      console.dir(err);
+      res.statusCode = 400;
+      res.end();
+    });
+
+    request.on('data', (chunk) => {
+      body.push(chunk);
+    });
+
+    request.on('end', () => {
+      const bodyString = Buffer.concat(body).toString();
+      const bodyParams = query.parse(bodyString);
+      jsonHandler.addUser(request, res, bodyParams);
+    });
   }
 };
 

@@ -13,14 +13,6 @@ const respondJSON = (request, response, status, object) => {
   response.end();
 };
 
-// const getUsers = (request, response) => {
-//   const responseJSON = {
-//     users,
-//   };
-
-//   respondJSON(request, response, 200, responseJSON);
-// };
-
 const getEvent = (request, response) => {
   const responseJSON = {
     events,
@@ -61,7 +53,6 @@ const addEvent = (request, response, body) => {
 };
 // function to add a user from a POST body
 const addUser = (request, response, body) => {
-  let users={};
   const responseJSON = {
     message: 'Name and Event Name are both required',
   };
@@ -71,21 +62,31 @@ const addUser = (request, response, body) => {
     return respondJSON(request, response, 400, responseJSON);
   }
 
-  let responseCode = 201;
-
-  if (events[body.eventName].users[body.name]) {
-    responseCode = 204;
-  } else {
-    events[body.eventName].users[body.name] = {};
+  let eventNameExists = false;
+  Object.keys(events).forEach((key) => {
+    if (key === body.eventName) {
+      eventNameExists = true;
+    }
+  });
+  if (!eventNameExists) {
+    responseJSON.message = 'Event does not exist';
+    return respondJSON(request, response, 404, responseJSON);
   }
 
+  let responseCode = 201;
+  if (events[body.eventName].users[body.userName]) {
+    responseCode = 204;
+  } else {
+    events[body.eventName].users[body.userName] = {};
+  }
   // add or update fields for this user name
-  events[body.eventName].users[body.name].name = body.name;
+  events[body.eventName].users[body.userName].name = body.userName;
 
   // if response is created, then set our created message
   // and sent response with a message
   if (responseCode === 201) {
     responseJSON.message = 'Created Successfully';
+    responseJSON.events = events;
     return respondJSON(request, response, responseCode, responseJSON);
   }
 
@@ -100,8 +101,6 @@ const notFound = (request, response) => {
 
   return respondJSON(request, response, 404, responseJSON);
 };
-
-
 
 module.exports = {
   notFound,
