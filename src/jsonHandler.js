@@ -1,5 +1,4 @@
 const events = {};
-const users = {};
 // will tell how many people are registered throughout the events
 // const totalUsers = {};
 
@@ -28,6 +27,8 @@ const getEvent = (request, response) => {
   };
 
   respondJSON(request, response, 200, responseJSON);
+
+  // return respondJSONMeta(request,response,200);
 };
 
 const addEvent = (request, response, body) => {
@@ -60,6 +61,7 @@ const addEvent = (request, response, body) => {
 };
 // function to add a user from a POST body
 const addUser = (request, response, body) => {
+  let users={};
   const responseJSON = {
     message: 'Name and Event Name are both required',
   };
@@ -71,15 +73,14 @@ const addUser = (request, response, body) => {
 
   let responseCode = 201;
 
-  if (users[body.name]) {
+  if (events[body.eventName].users[body.name]) {
     responseCode = 204;
   } else {
-    users[body.name] = {};
+    events[body.eventName].users[body.name] = {};
   }
 
   // add or update fields for this user name
-  users[body.name].name = body.name;
-  users[body.name].age = body.age;
+  events[body.eventName].users[body.name].name = body.name;
 
   // if response is created, then set our created message
   // and sent response with a message
@@ -97,8 +98,10 @@ const notFound = (request, response) => {
     id: 'notFound',
   };
 
-  respondJSON(request, response, 404, responseJSON);
+  return respondJSON(request, response, 404, responseJSON);
 };
+
+
 
 module.exports = {
   notFound,

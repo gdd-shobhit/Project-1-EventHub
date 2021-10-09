@@ -30,7 +30,7 @@ p{
 h3{
   color: white;
   position: absolute;
-  top: 30%;
+  top: 20%;
 }
 
 h2{
@@ -139,6 +139,17 @@ body{
   font-weight: 200;
 }
 
+.addUser{
+  position: absolute;
+  top: calc(50% - 160px);
+  left: calc(50% - 85px);
+  height: 150px;
+  width: 350px;
+  padding: 10px;
+  z-index: 2;
+  top: 23%;
+  left: 43%;
+}
 
 .addEvent{
   position: absolute;
@@ -183,6 +194,47 @@ body{
 }
 
 .addEvent input[type=submit]:focus{
+  outline: black;
+}
+
+::-webkit-input-placeholder{
+   color: rgba(255,255,255,0.6);
+}
+
+
+.addUser input[type=text]{
+  width: 250px;
+  height: 30px;
+  background: transparent;
+  border: 1px solid rgba(255, 255, 255, 0.6);
+  border-radius: 2px;
+  color: #fff;
+  font-family: 'Exo', sans-serif;
+  font-size: 16px;
+  font-weight: 400;
+  padding: 4px;
+}
+
+.addUser input[type=submit]{
+  border-color: #3498db;
+  box-shadow: 0 0 40px 40px #3498db inset, 0 0 0 0 #3498db;
+  transition: all 150ms ease-in-out;
+}
+
+.addUser input[type=submit]:hover {
+  box-shadow: 0 0 10px 0 #3498db inset, 0 0 10px 4px #3498db;
+}
+
+.addUser input[type=submit]:active{
+  opacity: 0.6;
+}
+
+.addUser input[type=text]:focus{
+  outline: none;
+  border: 1px solid rgba(255,255,255,0.9);
+}
+
+.addUser input[type=submit]:focus{
   outline: black;
 }
 

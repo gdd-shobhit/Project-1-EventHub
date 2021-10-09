@@ -1,13 +1,12 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <title>Project 1</title>  
+  <title>EventHub</title>  
   <link rel="stylesheet" type="text/css" href="/style.css">
     
     <script src="/bundle.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/animejs/2.2.0/anime.js"></script>
     <script src="https://requirejs.org/docs/release/2.3.5/minified/require.js"></script>
-
 </head>
 <body>
     <canvas id="c1"></canvas>
@@ -24,9 +23,15 @@
         <br><br><input type="submit" class="third" value="Add Event">
     </form>
     <h3>Event Already Exist? Add yourself now</h3>
-      <form action="/addUser"></form>
+      <form class="addUser" action="/addUser" method="POST" id="userForm">
+        <input id="userNameField" type="text" placeholder="Your Name" name="userName"><br>
+        <input id="userEventNameField" type="text" placeholder="Event Name" name="eventName"><br>
+        <br><input type="submit" class="third" value="Sign me up!">
+      </form>
+      
     <div class="box" id="eventBox">
-      <ul id="eventList">Event List<br>
+      <form action="/getEvent" method="GET" id="eventListForm"> <input id="getEvents" type="submit" class="third" value="Event List" > </form>
+      <ul id="eventList"><br>
         </ul>
     </div>
 </body>

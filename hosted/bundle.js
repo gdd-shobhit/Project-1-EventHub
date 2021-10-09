@@ -3,10 +3,26 @@
 var eventCount = 0;
 var events = {};
 
-var populateEvents = function populateEvents() {
+var handleGetEvents = function handleGetEvents(xhr, e) {
+  var obj = JSON.parse(xhr.response);
+  events = obj.events;
+  console.dir("events parsed");
+};
+
+var populateEvents = function populateEvents(url) {
   var count = document.getElementById("eventCount");
   count.textContent = "Count: ".concat(eventCount);
-  console.dir("jere");
+  var xhr = new XMLHttpRequest();
+  xhr.open('GET', url);
+  xhr.setRequestHeader('Accept', 'application/json');
+
+  xhr.onload = function () {
+    return handleGetEvents(xhr, e);
+  }; // const obj = JSON.parse(xhr.response);
+  // console.dir(obj);
+  //console.dir(events);
+
+
   Object.keys(events).forEach(function (key) {
     var li = document.createElement('li');
     console.dir(key + "  " + events[key].eventName);
@@ -256,17 +272,16 @@ var parseJSON = function parseJSON(xhr, content) {
   var obj = JSON.parse(xhr.response);
   console.dir(obj);
   var count = document.getElementById("eventCount");
+  events = obj.events;
 
-  if (xhr.responseURL === '/') {
-    events = obj.events;
-    populateEvents();
-  }
-
-  if (obj.events) {
-    events = obj.events;
-    eventCount++;
-    console.dir(eventCount);
-    count.textContent = "Count: ".concat(eventCount);
+  if (events) {
+    Object.keys(events).forEach(function (key) {
+      var li = document.createElement('li');
+      console.dir(key + "  " + events[key].eventName);
+      li.textContent = key;
+      eventCount++;
+      document.querySelector("#eventList").append(li);
+    });
   }
 };
 
@@ -281,6 +296,7 @@ var handleResponse = function handleResponse(xhr, parse) {
     case 201:
       var li = document.createElement('li');
       li.innerHTML = eventNameField.value;
+      eventCount++;
       document.querySelector("#eventList").append(li);
       break;
 
@@ -297,16 +313,23 @@ var handleResponse = function handleResponse(xhr, parse) {
   }
 };
 
-var sendGet = function sendGet(e, url) {
-  xhr.open("GET", url);
+var sendGetHead = function sendGetHead(e, form) {
+  var incomingFormAction = form.getAttribute('action');
+  var incomingFormMethod = form.getAttribute('method');
+  var xhr = new XMLHttpRequest();
+  xhr.open(incomingFormMethod, incomingFormAction);
   xhr.setRequestHeader('Accept', 'application/json');
-  console.log("here");
+  console.log(xhr.response);
 
-  xhr.onload = function () {
-    return handleResponse(xhr, true);
-  };
+  if (incomingFormMethod === 'GET') {
+    xhr.onload = function () {
+      return handleResponse(xhr, true);
+    };
+  }
 
-  return eventCount;
+  xhr.send();
+  e.preventDefault();
+  return false;
 };
 
 var sendPost = function sendPost(e, incomingForm) {
@@ -327,15 +350,23 @@ var sendPost = function sendPost(e, incomingForm) {
     };
 
     formData = "eventName=".concat(_eventNameField.value);
-  } else if (incomingFormAction === '/addUser') {// will get events list and then check if the user typed the right event or not
+  } else if (incomingFormAction === '/addUser') {
+    // will get events list and then check if the user typed the right event or not
     // and then only he can enter that event
-    // const events = sendGet(xhr,'/getEvent');
-    // const eventNameField = incomingForm.querySelector('#eventNameField');
-    // xhr.open(incomingFormMethod, incomingFormAction);
-    // xhr.setRequestHeader('Content-type', 'application/x-www-form-urlencoded');
-    // xhr.setRequestHeader ('Accept', 'application/json');
-    // xhr.onload = () => handleResponse(xhr,true);
-    // formData = `userName=${eventNameField.value}&eventName=${ageField.value}`;
+    sendGetHead(e);
+    var userNameField = incomingForm.querySelector('#userNameField');
+
+    var _eventNameField2 = incomingForm.querySelector('#eventNameField');
+
+    xhr.open(incomingFormMethod, incomingFormAction);
+    xhr.setRequestHeader('Content-type', 'application/x-www-form-urlencoded');
+    xhr.setRequestHeader('Accept', 'application/json');
+
+    xhr.onload = function () {
+      return handleResponse(xhr, true);
+    };
+
+    formData = "userName=".concat(userNameField.value, "&eventName=").concat(_eventNameField2.value);
   }
 
   xhr.send(formData);
@@ -345,23 +376,29 @@ var sendPost = function sendPost(e, incomingForm) {
 
 var init = function init() {
   // starting animation
-  animations(); // Button will Add event as a card, Right now its just on the backend
+  animations();
+  var count = document.getElementById("eventCount"); //count.textContent = `Count: ${populate}`
+  // Button will Add event as a card, Right now its just on the backend
 
-  var eventForm = document.querySelector('#eventForm'); // const userForm = document.querySelector('#userForm');
+  var eventForm = document.querySelector('#eventForm');
+  var userForm = document.querySelector('#userForm');
+  var eventList = document.querySelector('#eventListForm');
 
   var addEvent = function addEvent(e) {
     return sendPost(e, eventForm);
-  }; // const addUser = (e) => sendPost(e,userForm);
-
-
-  var getEvent = function getEvent(e) {
-    return sendGet(e, "/");
   };
 
-  eventForm.addEventListener('submit', addEvent); // userForm.addEventListener('submit',addUser);
+  var addUser = function addUser(e) {
+    return sendPost(e, userForm);
+  };
 
-  var count = document.getElementById("eventCount");
-  count.textContent = "Count: ".concat(getEvent);
+  var getEvent = function getEvent(e) {
+    return sendGetHead(e, eventList);
+  };
+
+  eventForm.addEventListener('submit', addEvent);
+  userForm.addEventListener('submit', addUser);
+  eventList.addEventListener('submit', getEvent);
 };
 
 window.onload = init;
