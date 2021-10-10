@@ -11,7 +11,7 @@
 <body>
     <canvas id="c1"></canvas>
 
-  <h2>Event <span id="eventCount">Count:</span></h2>
+  <h2>Event <span id="eventCount">Count: Press Event List!</span></h2>
   <h3>Event Already Exist? Add yourself now</h3>
   <div class="header2">
     <div>
@@ -19,7 +19,7 @@
       <form class="addUser" action="/addUser" method="POST" id="userForm">
         <input id="userNameField" type="text" placeholder="Your Name" name="userName"><br>
         <input id="userEventNameField" type="text" placeholder="Event Name" name="eventName"><br>
-        <br><input type="submit" class="third" value="Sign me up!" id="userInputButton" disabled>
+        <br><input type="submit" class="third" value="Press Event List!" id="userInputButton" disabled>
       </form>
     </div>
   <div class="body"></div>
@@ -36,6 +36,8 @@
     <form action="/getEvent" method="GET" id="eventListForm"> <input id="getEvents" type="submit" class="third list" value="Event List" > </form>      
     <div class="box" id="eventBox">
       <h2 id="eventInBox">Events</h2>
+      <br>
+      <br>
       <ul id="eventList"><br>
         </ul>
     </div>

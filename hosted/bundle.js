@@ -240,7 +240,6 @@ var animations = function animations() {
 
 var parseJSON = function parseJSON(xhr, update) {
   var obj = JSON.parse(xhr.response);
-  console.dir(obj);
   var count = document.getElementById("eventCount");
   events = obj.events;
 
@@ -249,15 +248,18 @@ var parseJSON = function parseJSON(xhr, update) {
 
     while (eventList.firstChild) {
       eventList.removeChild(eventList.firstChild);
+      eventCount = 0;
     }
 
-    Object.keys(events).forEach(function (key) {
-      var li = document.createElement('li');
-      console.dir(key + "  " + events[key].eventName);
-      li.textContent = key;
-      eventCount++;
-      eventList.append(li);
-    });
+    if (events) {
+      Object.keys(events).forEach(function (key) {
+        var li = document.createElement('li');
+        console.dir(key + "  " + events[key].eventName);
+        li.textContent = key;
+        eventCount++;
+        eventList.append(li);
+      });
+    }
   }
 
   count.textContent = "Count: ".concat(eventCount);
@@ -268,15 +270,19 @@ var handleResponse = function handleResponse(xhr, parse, update) {
   switch (xhr.status) {
     case 200:
       console.dir("Success");
-      document.querySelector("#userInputButton").disabled = false;
       break;
 
     case 201:
       break;
 
     case 204:
-      console.dir("already exists");
+      // since already exists, there's no need to update.
+      // if  i update event with the same name, the users will get lost inside.
       return;
+
+    case 400:
+      console.dir("Bad Request");
+      break;
 
     default:
       console.dir("default");
@@ -288,12 +294,13 @@ var handleResponse = function handleResponse(xhr, parse, update) {
 };
 
 var sendGetHead = function sendGetHead(e, form) {
+  document.querySelector("#userInputButton").disabled = false;
+  document.querySelector("#userInputButton").value = "Sign me up!";
   var incomingFormAction = form.getAttribute('action');
   var incomingFormMethod = form.getAttribute('method');
   var xhr = new XMLHttpRequest();
   xhr.open(incomingFormMethod, incomingFormAction);
   xhr.setRequestHeader('Accept', 'application/json');
-  console.log(xhr.response);
 
   if (incomingFormMethod === 'GET') {
     xhr.onload = function () {

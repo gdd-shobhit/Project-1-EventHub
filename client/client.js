@@ -241,6 +241,8 @@ const parseJSON = (xhr, update) => {
     eventCount=0;
   }
   
+  if(events)
+  {
     Object.keys(events).forEach(key=>{
       let li = document.createElement('li')
       console.dir(key + "  " +events[key].eventName)
@@ -248,6 +250,7 @@ const parseJSON = (xhr, update) => {
       eventCount++;
       eventList.append(li);
     });
+  }  
   }
   count.textContent = `Count: ${eventCount}`;  
 };
@@ -257,13 +260,14 @@ const handleResponse = (xhr,parse,update) => {
   switch(xhr.status)
   {
     case 200: console.dir("Success");
-    document.querySelector("#userInputButton").disabled = false;
     break;
-    case 201:
-      
+    case 201:   
     break;
-    case 204: console.dir("already exists");
+    case 204: // since already exists, there's no need to update.
+    // if  i update event with the same name, the users will get lost inside.
     return;
+    case 400:console.dir("Bad Request");
+    break;
     default: console.dir("default");
   }
 
@@ -274,13 +278,14 @@ const handleResponse = (xhr,parse,update) => {
 
 const sendGetHead = (e,form) =>{
 
+  document.querySelector("#userInputButton").disabled = false;
+  document.querySelector("#userInputButton").value = "Sign me up!";
   const incomingFormAction = form.getAttribute('action');
   const incomingFormMethod = form.getAttribute('method');
 
   const xhr = new XMLHttpRequest();
   xhr.open(incomingFormMethod,incomingFormAction);
   xhr.setRequestHeader ('Accept', 'application/json');
-  console.log(xhr.response);
   if(incomingFormMethod === 'GET')
   {
     xhr.onload = () => handleResponse(xhr,true,true);
