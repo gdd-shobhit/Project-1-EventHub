@@ -228,11 +228,13 @@ function fauxClick(x, y) {
 }
 }
 
+// parses the incoming json and updates the client side
 const parseJSON = (xhr, update) => {
   const obj = JSON.parse(xhr.response);
   const count = document.getElementById("eventCount");
   events = obj.events;
 
+  // deletes the list on client side and update it
   if(update)
   {
   let eventList = document.querySelector("#eventList");
@@ -241,8 +243,8 @@ const parseJSON = (xhr, update) => {
     eventList.removeChild(eventList.firstChild);
     eventCount=0;
   }
-  
-
+ 
+// if events exist that means they need to be printed
   if(events)
   {
     Object.keys(events).forEach(key=>{
@@ -254,6 +256,8 @@ const parseJSON = (xhr, update) => {
     });
   }  
   }
+
+  // if eventCount is not 0, enable the sign up button because now events exists to add users to it
   if(eventCount!=0)
 {
   document.querySelector("#userInputButton").disabled = false;
@@ -263,6 +267,8 @@ const parseJSON = (xhr, update) => {
   count.textContent = `Count: ${eventCount}`;  
 };
 
+// Handles the resposes, parse means that it should be parsed or not and update means, 
+// should the list be updated or not.
 const handleResponse = (xhr,parse,update) => {
   //parse response 
   switch(xhr.status)
@@ -286,6 +292,7 @@ const handleResponse = (xhr,parse,update) => {
   }
 };
 
+// Sends GET/HEAD Request
 const sendGetHead = (e,form) =>{
 
   document.querySelector("#userInputButton").disabled = false;
@@ -300,6 +307,10 @@ const sendGetHead = (e,form) =>{
   {
     xhr.onload = () => handleResponse(xhr,true,true);
   }
+  else if(incomingFormMethod ==="HEAD")
+  {
+    xhr.onload = () => handleResponse(xhr,false,false);
+  }
   
   xhr.send();
 
@@ -308,6 +319,7 @@ const sendGetHead = (e,form) =>{
   return false;
 }
 
+// sends post request
 const sendPost = (e,incomingForm) =>{
   
   let incomingFormAction = incomingForm.getAttribute('action');
@@ -328,10 +340,10 @@ const sendPost = (e,incomingForm) =>{
     formData = `eventName=${eventNameField.value}`;
   }
 
+  // if the action is addUser then get information that form and send it.
   else if(incomingFormAction === '/addUser')
   {
-    // will get events list and then check if the user typed the right event or not
-    // and then only he can enter that event
+    
     const userNameField = incomingForm.querySelector('#userNameField');
     const userEventNameField = incomingForm.querySelector('#userEventNameField');
     xhr.open(incomingFormMethod, incomingFormAction);
@@ -352,14 +364,18 @@ const sendPost = (e,incomingForm) =>{
 const init = () => {
   // starting animation
   animations();
+
+  // loading the forms
   const eventForm = document.querySelector('#eventForm');
   const userForm = document.querySelector('#userForm');
   const eventList = document.querySelector('#eventListForm');
 
+  // defining requests
   const addEvent = (e) => sendPost(e, eventForm);
   const addUser = (e) => sendPost(e,userForm);
   const getEvent = (e) => sendGetHead(e,eventList);
 
+  // adding event handlers/listeners
   eventForm.addEventListener('submit',addEvent);
   userForm.addEventListener('submit',addUser);
   eventList.addEventListener('submit',getEvent)

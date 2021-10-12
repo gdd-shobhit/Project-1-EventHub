@@ -236,12 +236,13 @@ var animations = function animations() {
     fauxClick.pageY = y;
     document.dispatchEvent(fauxClick);
   }
-};
+}; // parses the incoming json and updates the client side
+
 
 var parseJSON = function parseJSON(xhr, update) {
   var obj = JSON.parse(xhr.response);
   var count = document.getElementById("eventCount");
-  events = obj.events;
+  events = obj.events; // deletes the list on client side and update it
 
   if (update) {
     var eventList = document.querySelector("#eventList");
@@ -249,7 +250,8 @@ var parseJSON = function parseJSON(xhr, update) {
     while (eventList.firstChild) {
       eventList.removeChild(eventList.firstChild);
       eventCount = 0;
-    }
+    } // if events exist that means they need to be printed
+
 
     if (events) {
       Object.keys(events).forEach(function (key) {
@@ -260,7 +262,8 @@ var parseJSON = function parseJSON(xhr, update) {
         eventList.append(li);
       });
     }
-  }
+  } // if eventCount is not 0, enable the sign up button because now events exists to add users to it
+
 
   if (eventCount != 0) {
     document.querySelector("#userInputButton").disabled = false;
@@ -268,7 +271,9 @@ var parseJSON = function parseJSON(xhr, update) {
   }
 
   count.textContent = "Count: ".concat(eventCount);
-};
+}; // Handles the resposes, parse means that it should be parsed or not and update means, 
+// should the list be updated or not.
+
 
 var handleResponse = function handleResponse(xhr, parse, update) {
   //parse response 
@@ -302,7 +307,8 @@ var handleResponse = function handleResponse(xhr, parse, update) {
   if (parse) {
     parseJSON(xhr, update);
   }
-};
+}; // Sends GET/HEAD Request
+
 
 var sendGetHead = function sendGetHead(e, form) {
   document.querySelector("#userInputButton").disabled = false;
@@ -317,12 +323,17 @@ var sendGetHead = function sendGetHead(e, form) {
     xhr.onload = function () {
       return handleResponse(xhr, true, true);
     };
+  } else if (incomingFormMethod === "HEAD") {
+    xhr.onload = function () {
+      return handleResponse(xhr, false, false);
+    };
   }
 
   xhr.send();
   e.preventDefault();
   return false;
-};
+}; // sends post request
+
 
 var sendPost = function sendPost(e, incomingForm) {
   var incomingFormAction = incomingForm.getAttribute('action');
@@ -341,9 +352,8 @@ var sendPost = function sendPost(e, incomingForm) {
     };
 
     formData = "eventName=".concat(eventNameField.value);
-  } else if (incomingFormAction === '/addUser') {
-    // will get events list and then check if the user typed the right event or not
-    // and then only he can enter that event
+  } // if the action is addUser then get information that form and send it.
+  else if (incomingFormAction === '/addUser') {
     var userNameField = incomingForm.querySelector('#userNameField');
     var userEventNameField = incomingForm.querySelector('#userEventNameField');
     xhr.open(incomingFormMethod, incomingFormAction);
@@ -364,10 +374,11 @@ var sendPost = function sendPost(e, incomingForm) {
 
 var init = function init() {
   // starting animation
-  animations();
+  animations(); // loading the forms
+
   var eventForm = document.querySelector('#eventForm');
   var userForm = document.querySelector('#userForm');
-  var eventList = document.querySelector('#eventListForm');
+  var eventList = document.querySelector('#eventListForm'); // defining requests
 
   var addEvent = function addEvent(e) {
     return sendPost(e, eventForm);
@@ -379,7 +390,8 @@ var init = function init() {
 
   var getEvent = function getEvent(e) {
     return sendGetHead(e, eventList);
-  };
+  }; // adding event handlers/listeners
+
 
   eventForm.addEventListener('submit', addEvent);
   userForm.addEventListener('submit', addUser);
