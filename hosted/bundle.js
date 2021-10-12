@@ -1,7 +1,7 @@
 "use strict";
 
 var eventCount = 0;
-var events = {};
+var events = {}; // Took the idea from Alex Zaworski https://codepen.io/alexzaworski/pen/mEkvAG
 
 var animations = function animations() {
   var c = document.getElementById("c1");
@@ -278,19 +278,25 @@ var handleResponse = function handleResponse(xhr, parse, update) {
       break;
 
     case 201:
+      console.dir("Created");
       break;
 
     case 204:
-      // since already exists, there's no need to update.
+      console.dir("Already Exists"); // since already exists, there's no need to update.
       // if  i update event with the same name, the users will get lost inside.
+
       return;
 
     case 400:
       console.dir("Bad Request");
       break;
 
+    case 404:
+      console.dir("Not Found");
+      break;
+
     default:
-      console.dir("default");
+      console.dir("not the normal codes");
   }
 
   if (parse) {

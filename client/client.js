@@ -2,6 +2,7 @@
 let eventCount=0;
 let events ={};
 
+// Took the idea from Alex Zaworski https://codepen.io/alexzaworski/pen/mEkvAG
 const animations = () =>{
     var c = document.getElementById("c1");
     var hub = document.getElementById("hub");
@@ -268,14 +269,16 @@ const handleResponse = (xhr,parse,update) => {
   {
     case 200: console.dir("Success");
     break;
-    case 201:   
+    case 201: console.dir("Created")  
     break;
-    case 204: // since already exists, there's no need to update.
+    case 204: console.dir("Already Exists") // since already exists, there's no need to update.
     // if  i update event with the same name, the users will get lost inside.
     return;
     case 400:console.dir("Bad Request");
     break;
-    default: console.dir("default");
+    case 404:console.dir("Not Found");
+    break;
+    default: console.dir("not the normal codes");
   }
 
   if(parse){
