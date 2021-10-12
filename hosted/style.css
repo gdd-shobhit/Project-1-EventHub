@@ -79,11 +79,13 @@ body{
   font-size: 12px;
 }
 
+
+
 .box {
   transition: box-shadow .3s;
   width: 300px;
   height: 200px;
-  margin: 50px;
+  margin: 20px;
   border-radius:10px;
   border: 1px solid transparent;
   background:transparent;
@@ -155,7 +157,7 @@ body{
 
 .list{
   position: absolute;
-  top: 60%;
+  top: 70%;
   left:10%;
 }
 

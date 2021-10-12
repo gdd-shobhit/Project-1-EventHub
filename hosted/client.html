@@ -11,15 +11,14 @@
 <body>
     <canvas id="c1"></canvas>
 
+    <link href="https://fonts.googleapis.com/css?family=Lato" rel="stylesheet"> 
   <h2>Event <span id="eventCount">Count: Press Event List!</span></h2>
   <h3>Event Already Exist? Add yourself now</h3>
   <div class="header2">
-    <div>
-    </div>
       <form class="addUser" action="/addUser" method="POST" id="userForm">
         <input id="userNameField" type="text" placeholder="Your Name" name="userName"><br>
         <input id="userEventNameField" type="text" placeholder="Event Name" name="eventName"><br>
-        <br><input type="submit" class="third" value="Press Event List!" id="userInputButton" disabled>
+        <br><input type="submit" class="third" value="Events not Loaded" id="userInputButton" disabled>
       </form>
     </div>
   <div class="body"></div>

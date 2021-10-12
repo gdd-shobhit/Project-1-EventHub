@@ -241,6 +241,7 @@ const parseJSON = (xhr, update) => {
     eventCount=0;
   }
   
+
   if(events)
   {
     Object.keys(events).forEach(key=>{
@@ -252,6 +253,12 @@ const parseJSON = (xhr, update) => {
     });
   }  
   }
+  if(eventCount!=0)
+{
+  document.querySelector("#userInputButton").disabled = false;
+  document.querySelector("#userInputButton").value = "Sign me up!";
+}
+
   count.textContent = `Count: ${eventCount}`;  
 };
 

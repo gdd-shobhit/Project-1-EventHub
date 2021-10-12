@@ -262,6 +262,11 @@ var parseJSON = function parseJSON(xhr, update) {
     }
   }
 
+  if (eventCount != 0) {
+    document.querySelector("#userInputButton").disabled = false;
+    document.querySelector("#userInputButton").value = "Sign me up!";
+  }
+
   count.textContent = "Count: ".concat(eventCount);
 };
 

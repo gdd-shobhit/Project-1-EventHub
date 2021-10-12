@@ -70,7 +70,7 @@ const addUser = (request, response, body) => {
   });
   if (!eventNameExists) {
     responseJSON.message = 'Event does not exist';
-    return respondJSON(request, response, 404, responseJSON);
+    return respondJSON(request, response, 400, responseJSON);
   }
 
   let responseCode = 201;
